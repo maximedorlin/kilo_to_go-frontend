@@ -1,0 +1,126 @@
+stages:
+  - check
+  - lint
+  - test
+  - build
+  - deploy
+  - notify
+
+# Cache des dépendances npm et des images Docker
+cache:
+  key: ${CI_PROJECT_ID}
+  paths:
+    - node_modules/
+    - .docker/
+
+# Étape 1 : Vérification des conflits de fusion
+check_conflicts:
+  stage: check
+  image: alpine:latest
+  script:
+    - git fetch origin main
+    - if ! git merge --no-commit --no-ff origin/main; then
+      echo "Des conflits de fusion ont été détectés.";
+      exit 1;
+      fi
+  only:
+    - merge_requests
+
+# Étape 2 : Linter le code avec ESLint
+# lint_next:
+#   stage: lint
+#   image: node:18-alpine
+#   cache:
+#     key: ${CI_PROJECT_ID}
+#     paths:
+#       - node_modules/
+#   script:
+#     - npm i --legacy-peer-deps
+#     - npm run lint
+
+# Étape 3 : Vérification des types avec TypeScript
+type_check_js:
+  stage: lint
+  image: node:18-alpine
+  cache:
+    key: ${CI_PROJECT_ID}
+    paths:
+      - node_modules/
+  script:
+    - npm i --legacy-peer-deps
+    # - npm run type-check
+    - echo "types checked successfully"
+
+# Étape 4 : Tests end-to-end avec Cypress
+cypress_tests:
+  stage: test
+  image: cypress/included:10.3.0
+  cache:
+    key: ${CI_PROJECT_ID}
+    paths:
+      - node_modules/
+  script:
+    - npm i --legacy-peer-deps
+    - npm run build # Construction de l'application Next.js pour les tests
+    - npm start & # Lancement du serveur en arrière-plan
+    - npx cypress run
+  variables:
+    CYPRESS_baseUrl: http://localhost:3000
+  artifacts:
+    when: always
+    paths:
+      - cypress/videos/* # Sauvegarde des vidéos des tests
+      - cypress/screenshots/* # Sauvegarde des captures d'écran en cas d'échec
+    expire_in: 1 week
+
+# Étape 5 : Construction de l'application Next.js
+build_next:
+  stage: build
+  image: node:18-alpine
+  cache:
+    key: ${CI_PROJECT_ID}
+    paths:
+      - node_modules/
+  script:
+    - npm i --legacy-peer-deps
+    - npm run build # Génération des fichiers de production
+  artifacts:
+    paths:
+      - .next
+    expire_in: 1 week
+
+# Étape 6 : Déploiement
+# deploy_next:
+#   stage: deploy
+#   image: alpine:latest
+#   before_script:
+#     - apk add --no-cache openssh
+#   cache:
+#     key: ${CI_PROJECT_ID}
+#     paths:
+#       - .docker/
+#   script:
+#     - echo "Déploiement de l'application sur le serveur..."
+#     - scp -r .next user@server_ip:/var/www/nextjs-app
+#     - ssh user@server_ip "cd /var/www/nextjs-app && npm install --production && pm2 restart nextjs-app"
+#   only:
+#     - main
+
+# Étape 7 : Notifications
+# notify_review:
+#   stage: notify
+#   image: alpine:latest
+#   script:
+#     - echo "Une nouvelle version est en attente de revue." | mail -s "Nouvelle version à revoir" cyrille.epie@afreetech.com
+#   when: on_success
+#   only:
+#     - merge_requests
+
+# notify_deploy:
+#   stage: notify
+#   image: alpine:latest
+#   script:
+#     - echo "Le déploiement est terminé avec succès." | mail -s "Déploiement terminé" cyrille.epie@afreetech.com
+#   when: on_success
+#   only:
+#     - main

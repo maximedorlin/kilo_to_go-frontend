@@ -1,0 +1,7 @@
+{
+    "i18n-ally.localesPaths": [
+        "src/locale",
+        "src/app/web/messages",
+        "src/components/ui/language"
+    ]
+}

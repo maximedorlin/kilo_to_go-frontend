@@ -1,13 +1,5 @@
 import { BaseData } from "./base.interface";
 
-export interface QuaterSubdivisionStreet {
-  subdivision_id: string | null;
-  subdivision_name: string | null;
-  quater_id: string | null;
-  quater_name: string | null;
-  street_id: string | null;
-}
-
 export interface QuaterFeature {
   type: string;
   features: Feature[];
@@ -150,7 +142,6 @@ export interface QuarterProperties {
   population: number;
   sup: number;
   subdivision_id: string;
-  subdivision_name: string;
 }
 
 // Réutilisation des interfaces communes existantes
@@ -208,7 +199,6 @@ export interface Properties {
   population: number;
   sup: number;
   subdivision: string;
-  subdivision_name: string;
 }
 
 export interface Disease {
@@ -238,7 +228,7 @@ export const PREDEFINED_CATEGORIES = [
 
 export const PREDEFINED_CATEGORIES_FOR_CREATION = [
   {
-    id: "environmental",
+    id: "environnementale",
     libelle: "Maladies environnementales / professionnelles",
   },
 
@@ -248,12 +238,12 @@ export const PREDEFINED_CATEGORIES_FOR_CREATION = [
   },
 
   {
-    id: "infectious",
+    id: "infectieuse",
     libelle: "Maladies infectieuses",
   },
 
   {
-    id: "metabolic",
+    id: "metabolique",
     libelle: "Maladies métaboliques",
   },
 
@@ -263,7 +253,7 @@ export const PREDEFINED_CATEGORIES_FOR_CREATION = [
   },
 
   {
-    id: "genetic",
+    id: "genetique",
     libelle: "Maladies génétiques",
   },
 ];

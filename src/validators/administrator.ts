@@ -43,3 +43,19 @@ export const PersonnelValidator = z.object({
   personnel_type: z.string({ message: "required" }),
   personnel_description: z.string({ message: "required" }),
 });
+
+export const ParticipantsValidator = z.object({
+  nom_complet: z.string({ message: "required" }),
+  profil: z.string({ message: "required" }),
+  email: z.string({ message: "required" }),
+  type_participant: z.string({ message: "required" }),
+  telephone: z.string({ message: "required" }),
+});
+
+export const ConsumableValidator = z.object({
+  consumable_name: z.string({ message: "required" }),
+  consumable_type: z
+    .string({ message: "required" })
+    .min(0, { message: "required" }),
+  consumable_quantity: z.number({ message: "required" }),
+});

@@ -1,0 +1,540 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+@layer base {
+  :root {
+    --background: 190, 100%, 98%;
+    --foreground: 201 13% 25%;
+    --card: 0 0% 100%;
+    --card-foreground: 202 15% 25%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 30 4% 38%;
+    --primary: 200 100% 22%; /* #004E70 */
+    --primary-foreground: 0 8% 95%;
+    --secondary: 28 100% 44%; /* #DE6600 */
+    --secondary-foreground: 0 0% 0%;
+    --muted: 180 6% 93%;
+    --muted-foreground: 199 18% 21%;
+    --accent: 56 91% 49%; /* #F1E50A */
+    --accent-foreground: 199 18% 21%;
+    --destructive: 0 99% 38%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 84%;
+    --input: 0 0% 76%;
+    --ring: 0 0% 100%;
+    --chart-1: 329 90% 72%;
+    --chart-2: 119 90% 72%;
+    --chart-3: 179 90% 72%;
+    --chart-4: 299 90% 72%;
+    --chart-5: 359 90% 72%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 7%;
+    --foreground: 0 0% 95%;
+    --card: 0 0% 16%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 16%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 329 90% 64%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 359 90% 64%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 0 0% 37%;
+    --muted-foreground: 0 0% 70%;
+    --accent: 299 90% 62%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 8 100% 41%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 31%;
+    --input: 0 0% 27%;
+    --ring: 321 90% 63%;
+    --chart-1: 329 90% 72%;
+    --chart-2: 119 90% 72%;
+    --chart-3: 179 90% 72%;
+    --chart-4: 299 90% 72%;
+    --chart-5: 359 90% 72%;
+  }
+}
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.hidden-days table {
+  display: none; /* Hides the days grid */
+}
+
+/* * {
+  scroll-behavior: smooth;
+} */
+
+.ds {
+  color: #de68003b
+}
+
+@media (min-width: 768px) {
+  .recette-item:nth-child(even) {
+    transform: translateY(-40px);
+  }
+}
+
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+.sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #c9c9c9 #ffffff;
+}
+
+/* Chrome, Edge, and Safari */
+.sidebar-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #c9c9c9;
+  border-radius: 200px;
+  border: 12px ridge #c9c9c9;
+}
+
+/* Firefox */
+.invisible-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #c9c9c9 transparent;
+}
+
+/* Chrome, Edge, and Safari */
+.invisible-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.invisible-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.invisible-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #c9c9c9;
+  border-radius: 200px;
+  border: 12px ridge #c9c9c9;
+}
+
+.custom-page--scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #004e7073 transparent; /* Firefox */
+}
+
+/* WebKit (Chrome, Edge, Safari) */
+.custom-page--scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-page--scrollbar::-webkit-scrollbar-thumb {
+  background-color: #004e7073;
+  border-radius: 10px;
+}
+
+.custom-page--scrollbar::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container .glass {
+  position: relative;
+  width: 180px;
+  height: 200px;
+  background: linear-gradient(#fff2, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 25px rgba(0, 0, 0, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.5s;
+  border-radius: 10px;
+  margin: 0 -45px;
+  backdrop-filter: blur(10px);
+  transform: rotate(calc(var(--r) * 1deg));
+}
+
+.container:hover .glass {
+  transform: rotate(0deg);
+  margin: 0 10px;
+}
+
+.container .glass::before {
+  content: attr(data-text);
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+}
+.container .glass svg {
+  font-size: 2.5em;
+  fill: #fff;
+}
+
+@property --border-angle {
+  inherits: false;
+  initial-value: 0deg;
+  syntax: "<angle>";
+}
+
+.card-animate::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  background-image: linear-gradient(
+    180deg,
+    rgb(0, 183, 255),
+    rgb(255, 48, 255)
+  );
+  height: 100%;
+
+  transition: all 0.2s linear;
+}
+
+.card-animate:hover::before {
+  animation: rotBGimg 3s linear infinite;
+}
+
+@keyframes rotBGimg {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.loader {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  background: rgba(45, 45, 45, 1);
+  overflow: hidden;
+  transform: rotate(calc(90deg * var(--i)));
+}
+
+.loader::before {
+  content: "";
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(var(--clr), transparent);
+  animation: animate 1.5s linear infinite;
+}
+
+.loader::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  background: rgba(45, 45, 45, 0.9);
+}
+
+@keyframes animate {
+  0% {
+    transform: translate(-150px, -150px);
+  }
+  25% {
+    transform: translate(0px, -150px);
+  }
+  50% {
+    transform: translate(0px, 0px);
+  }
+  75% {
+    transform: translate(-150px, 0px);
+  }
+  100% {
+    transform: translate(-150px, -150px);
+  }
+}
+
+.spinner-box .card-spinner {
+  position: relative;
+
+  padding: 10px 20px;
+  overflow: hidden;
+}
+
+.spinner-box .card-spinner span {
+  position: absolute;
+  display: block;
+}
+
+.spinner-box .card-spinner:hover span:nth-child(1) {
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00ffad);
+  animation: btn-anim1 1.5s linear infinite;
+}
+
+@keyframes btn-anim1 {
+  0% {
+    left: -100%;
+  }
+
+  50%,
+  100% {
+    left: 100%;
+  }
+}
+
+.spinner-box .card-spinner:hover span:nth-child(2) {
+  top: -100%;
+  right: 0;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, #00ffad);
+  animation: btn-anim2 1.5s linear infinite;
+  animation-delay: 0.375s;
+}
+
+@keyframes btn-anim2 {
+  0% {
+    top: -100%;
+  }
+
+  50%,
+  100% {
+    top: 100%;
+  }
+}
+
+.spinner-box .card-spinner:hover span:nth-child(3) {
+  bottom: 0;
+  right: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(270deg, transparent, #00ffad);
+  animation: btn-anim3 1.5s linear infinite;
+  animation-delay: 0.75s;
+}
+
+@keyframes btn-anim3 {
+  0% {
+    right: -100%;
+  }
+
+  50%,
+  100% {
+    right: 100%;
+  }
+}
+
+.spinner-box .card-spinner:hover span:nth-child(4) {
+  bottom: -100%;
+  left: 0;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(360deg, transparent, #00ffad);
+  animation: btn-anim4 1.5s linear infinite;
+  animation-delay: 1.125s;
+}
+
+@keyframes btn-anim4 {
+  0% {
+    bottom: -100%;
+  }
+
+  50%,
+  100% {
+    bottom: 100%;
+  }
+}
+
+.loader__ {
+  display: block;
+  --height-of-loader: 4px;
+  --loader-color: #03721f;
+  height: var(--height-of-loader);
+  border-radius: 30px;
+  background-color: rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.loader__::before {
+  content: "";
+  position: absolute;
+  background: var(--loader-color);
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  border-radius: 30px;
+  animation: moving 1s ease-in-out infinite;
+}
+
+@keyframes moving {
+  50% {
+    width: 100%;
+  }
+
+  100% {
+    width: 0;
+    right: 0;
+    left: unset;
+  }
+}
+
+/* <div class="loader__ss">
+  <div class="justify-content-center jimu-primary-loading"></div>
+</div> */
+.loader__ss {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.jimu-primary-loading:before,
+.jimu-primary-loading:after {
+  position: absolute;
+  top: 0;
+  content: "";
+}
+
+.jimu-primary-loading:before {
+  left: -19.992px;
+}
+
+.jimu-primary-loading:after {
+  left: 19.992px;
+  -webkit-animation-delay: 0.32s !important;
+  animation-delay: 0.32s !important;
+}
+
+.jimu-primary-loading:before,
+.jimu-primary-loading:after,
+.jimu-primary-loading {
+  background: #076fe5;
+  -webkit-animation: loading-keys-app-loading 0.8s infinite ease-in-out;
+  animation: loading-keys-app-loading 0.8s infinite ease-in-out;
+  width: 13.6px;
+  height: 32px;
+}
+
+.jimu-primary-loading {
+  text-indent: -9999em;
+  margin: auto;
+  position: absolute;
+  right: calc(50% - 6.8px);
+  top: calc(50% - 16px);
+  -webkit-animation-delay: 0.16s !important;
+  animation-delay: 0.16s !important;
+}
+
+@-webkit-keyframes loading-keys-app-loading {
+  0%,
+  80%,
+  100% {
+    opacity: 0.75;
+    box-shadow: 0 0 #076fe5;
+    height: 32px;
+  }
+
+  40% {
+    opacity: 1;
+    box-shadow: 0 -8px #076fe5;
+    height: 40px;
+  }
+}
+
+@keyframes loading-keys-app-loading {
+  0%,
+  80%,
+  100% {
+    opacity: 0.75;
+    box-shadow: 0 0 #076fe5;
+    height: 32px;
+  }
+
+  40% {
+    opacity: 1;
+    box-shadow: 0 -8px #076fe5;
+    height: 40px;
+  }
+}
+
+.triangle {
+  height: 40px;
+  width: 40px;
+  background-color: #003bde; /* Couleur de fond */
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%); /* Coordonnées des sommets */
+  transform: rotateY("50deg");
+}
+
+.triangle {
+  aspect-ratio: 1; /* Maintient un ratio de 1:1 */
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 8px; /* horizontal scrollbar height */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background-color: hsl(var(--background));
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--primary));
+  border-radius: 9999px;
+}
+
+/* Firefox support */
+.custom-scrollbar {
+  scrollbar-color: hsl(var(--primary)) hsl(var(--background));;
+  scrollbar-width: thin;
+}
+
+
+@layer components {
+
+  .ol-custom-overviewmap .ol-overviewmap-box {
+    @apply border-4 border-red-500 bg-red-500/10;
+
+  }
+
+
+
+  .ol-map {
+    @apply w-full h-full relative;
+  }
+}

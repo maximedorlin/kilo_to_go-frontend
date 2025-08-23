@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    container_name: cud_frontend
+    volumes:
+      - .:/app/
+      - /app/node_modules
+    ports:
+      - 3000:3000
+    environment:
+      NODE_ENV: development
+    command: ["npm", "run", "dev"]
+  react:
+    build: .
+    container_name: next_build
+    volumes:
+      - .:/app
+      - /app/node_modules
+    entrypoint: ["npm"]
+
+  # Cypress container
+  cypress:
+    # the Docker image to use from https://github.com/cypress-io/cypress-docker-images
+    image: "cypress/included:13.17.0"
+    depends_on:
+      - web
+    environment:
+      # pass base url to test pointing at the web application
+      - CYPRESS_baseUrl=http://web:3000
+    # share the current folder as volume to avoid copying
+    working_dir: /e2e
+    volumes:
+      - ./:/e2e

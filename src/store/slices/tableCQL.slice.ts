@@ -34,7 +34,6 @@ const initialState: Record<string, tableMapInterface> = {
   transfertStation: initialState_1,
   request: initialState_1,
   dropDownProgram: initialState_1,
-  dropDownProgramIntervention: initialState_1,
   idgData: initialState_1,
 };
 

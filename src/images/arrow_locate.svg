@@ -1,0 +1,7 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 100 100" width="200" height="200">
+  <polygon points="50,5 60,50 50,45 40,50" 
+           fill="rgba(0, 0, 255, 0.6)" />
+  <polygon points="50,45 55,95 50,85 45,95" 
+           fill="rgba(255, 0, 0, 0.6)" />
+</svg>

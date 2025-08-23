@@ -395,10 +395,6 @@ export interface AllPermissionsInterface {
   delete_idgclaim: boolean;
 }
 
-export type ViewPermissionsType = {
-  [K in keyof AllPermissionsInterface]: K extends `view_${string}` ? K : never;
-}[keyof AllPermissionsInterface][];
-
 // export interface AllPermissions {
 //   can_has_all_permissions: boolean;
 //   can_voir_liste_categorie_patrimoine: boolean;

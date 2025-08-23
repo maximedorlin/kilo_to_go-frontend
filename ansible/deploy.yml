@@ -1,0 +1,20 @@
+- name: Deploy app using Docker Compose
+  hosts: production
+  become: true
+  tasks:
+    - name: Ensure deployment directory exists
+      file:
+        path: "{{ deploy_path }}"
+        state: directory
+
+    - name: Copy Docker image tar to server
+      copy:
+        src: "{{ playbook_dir }}/../{{ image_file }}"
+        dest: "{{ deploy_path }}/{{ image_file }}"
+
+    - name: Load Docker image from tar
+      command: docker load -i {{ deploy_path }}/{{ image_file }}
+
+    - name: Run Docker Compose v2
+      community.docker.docker_compose_v2:
+        project_src: "{{ deploy_path }}"

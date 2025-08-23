@@ -52,6 +52,11 @@ const GeoSelectedIdsSlice = createSlice({
       state,
       action: PayloadAction<Pick<GeoSelectedIdsInterface, "mapIsLoading">>
     ) => {
+      console.log(
+        "action.payload.mapIsLoading ------",
+        action.payload.mapIsLoading
+      );
+
       state.mapIsLoading = action.payload.mapIsLoading;
       return state;
     },

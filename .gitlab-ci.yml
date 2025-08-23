@@ -1,0 +1,179 @@
+image: docker/compose:1.29.2
+
+services:
+  - docker:20.10.7-dind
+
+variables:
+  GIT_DEPTH: 0 # Permet à SonarQube d'identifier l'auteur des commits
+  IMAGE_FILE_FRONT: sig-frontend-image.tar
+  DEPLOY_PATH: /home/aft/apps/sig-frontend
+
+stages:
+  - analyse_code
+  - build
+  - test
+  - deploy
+
+cache:
+  key: docker-cache
+  paths:
+    - .docker-cache
+
+# 1. Analyse statique SonarQube
+Code_Quality:
+  stage: analyse_code
+  tags: [ubuntu-1]
+  image: sonarsource/sonar-scanner-cli:latest
+  script:
+    - apt-get update && apt-get install -y python3
+    - |
+      export SONAR_BRANCH_KEY=$(echo "$CI_COMMIT_REF_NAME" | tr '/' '_')
+      sonar-scanner \
+        -Dsonar.projectKey=CUD-SIG-FRONTEND-$SONAR_BRANCH_KEY \
+        -Dsonar.sources=. \
+        -Dsonar.host.url=$SONAR_HOST_URL \
+        -Dsonar.login=$SONAR_LOGIN
+
+      STATUS="PENDING"
+      CE_TASK_URL=$(grep ceTaskUrl .scannerwork/report-task.txt | cut -d'=' -f2-)
+      echo "Checking SonarQube task status at: $CE_TASK_URL"
+
+      while [[ "$STATUS" == "PENDING" || "$STATUS" == "IN_PROGRESS" ]]; do
+        sleep 5
+        STATUS=$(curl -s -u $SONAR_LOGIN: $CE_TASK_URL | python3 -c "import sys, json; print(json.load(sys.stdin)['task']['status'])")
+      done
+
+      ANALYSIS_ID=$(curl -s -u $SONAR_LOGIN: $CE_TASK_URL | python3 -c "import sys, json; print(json.load(sys.stdin)['task']['analysisId'])")
+
+      QUALITY_GATE_STATUS=$(curl -s -u $SONAR_LOGIN: "$SONAR_HOST_URL/api/qualitygates/project_status?analysisId=$ANALYSIS_ID" | python3 -c "import sys, json; print(json.load(sys.stdin)['projectStatus']['status'])")
+
+      if [ "$QUALITY_GATE_STATUS" != "OK" ]; then
+        echo "Quality Gate failed: $QUALITY_GATE_STATUS"
+        exit 1
+      fi
+  when: manual 
+  rules:
+    - if: '$CI_COMMIT_REF_NAME =~ /^feature\//'
+    - if: '$CI_COMMIT_REF_NAME == "develop"'
+  
+# 2. Construction de l'image Docker
+build:
+  stage: build
+  image: node:18
+  tags: [ubuntu-1]
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - apt-get update && apt-get install -y docker-compose
+  script:
+    - echo "Préparation du cache npm dans .docker-cache/npm..."
+    - mkdir -p .docker-cache/npm
+    - npm config set cache .docker-cache/npm --global
+    - echo "Installation des dépendances Node.js..."
+    - npm install --legacy-peer-deps
+    - echo "Construction de l’image Docker pour SIG Frontend..."
+    - docker-compose -f docker-compose.preprod.yml down --remove-orphans
+    - docker-compose -f docker-compose.preprod.yml build
+    - docker save -o $IMAGE_FILE_FRONT cud-sig-front_app
+  cache:
+    key: npm-cache
+    paths:
+      - .docker-cache/npm
+  artifacts:
+    paths:
+      - $IMAGE_FILE_FRONT
+      - docker-compose.deploy.yml
+      - .docker-cache/npm
+    expire_in: 1 hour
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "develop"'
+
+owasp-security_scan:
+  stage: test
+  image: ghcr.io/zaproxy/zaproxy:bare
+  script:
+    # Install needed tools in the bare image
+    - apt-get update && apt-get install -y python3 python3-pip curl unzip git
+
+    # Download zap-baseline.py from official ZAP repo
+    - curl -L https://github.com/zaproxy/zaproxy/releases/latest/download/zap-baseline.py -o zap-baseline.py
+    - chmod +x zap-baseline.py
+
+    # Create required directory for ZAP to run
+    - mkdir -p /zap/wrk
+
+    # Run the scan (replace URL accordingly)
+    - python3 zap-baseline.py -t http://cud-sig.afreetech.local -r zap-report.html -x zap-report.xml -I || true
+
+  artifacts:
+    paths:
+      - zap-report.html
+      - zap-report.xml
+    expire_in: 1 week
+  when: manual
+
+
+
+
+# 3. Tests manuels
+Unit_test:
+  stage: test
+  tags: [ubuntu-1]
+  script:
+    - echo "Tests unitaires en attente d'intégration."
+  when: manual
+  rules:
+    - if: '$CI_COMMIT_REF_NAME =~ /^feature\//'
+    - if: '$CI_COMMIT_REF_NAME == "develop"'
+
+Integration_test:
+  stage: test
+  tags: [ubuntu-1]
+  script:
+    - echo "Tests d’intégration avec Postman à venir."
+  when: manual
+  rules:
+    - if: '$CI_COMMIT_REF_NAME =~ /^feature\//'
+    - if: '$CI_COMMIT_REF_NAME == "develop"'
+
+# 4. Scan de sécurité DAST avec OWASP ZAP
+
+# 5. Déploiement (uniquement sur develop)
+deploy:
+  stage: deploy
+  tags: [ubuntu-1]
+  script:
+    - apk add --no-cache sshpass openssh
+    - echo "Vérification des fichiers à copier..."
+    - test -f "$IMAGE_FILE_FRONT"
+    - test -f "docker-compose.deploy.yml"
+    - test -f ".env-preprod"
+
+    - echo "Nettoyage de l'ancien déploiement..."
+    - |
+      sshpass -p "$VM_PASS" ssh -o StrictHostKeyChecking=no "$VM_USER@$VM_HOST" "
+        docker stop srec_front_app || true
+        docker rm -f srec_front_app || true
+        docker rmi -f sig_front_app || true
+        docker rmi -f cud-sig-front_app:latest || true
+        rm -f \"$DEPLOY_PATH/docker-compose.deploy.yml\" || true
+        rm -f \"$DEPLOY_PATH/.env-preprod\" || true
+        rm -f \"$DEPLOY_PATH/$IMAGE_FILE_FRONT\" || true
+      "
+
+    - echo "Copie des fichiers vers le serveur distant..."
+    - sshpass -p "$VM_PASS" scp -v -o StrictHostKeyChecking=no "$IMAGE_FILE_FRONT" docker-compose.deploy.yml .env-preprod "$VM_USER@$VM_HOST:$DEPLOY_PATH/"
+
+    - echo "Démarrage du service SIG Frontend..."
+    - |
+      sshpass -p "$VM_PASS" ssh -o StrictHostKeyChecking=no "$VM_USER@$VM_HOST" "
+        set -e
+        cd \"$DEPLOY_PATH\"
+        echo 'Chargement de l’image Docker...'
+        docker load -i \"$IMAGE_FILE_FRONT\"
+        echo 'Démarrage des containers...'
+        docker compose --env-file .env-preprod -f docker-compose.deploy.yml up -d --remove-orphans
+      "
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "develop"'

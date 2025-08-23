@@ -4,7 +4,6 @@ interface PublicLightingViewParamsInterface {
   layerViewParams?: string;
   notSelectStreetLampOnObservation?: boolean;
   notSelectSignOnDegradation?: boolean;
-  notSelectcollectionOnRequest?: boolean;
   notSelectEstablishmentOnDescent?: boolean;
   notSelectDrainOnBlockage?: boolean;
   selectedParamId?: string;
@@ -13,7 +12,6 @@ const initialState: PublicLightingViewParamsInterface = {
   layerViewParams: "",
   notSelectStreetLampOnObservation: true,
   notSelectSignOnDegradation: true,
-  notSelectcollectionOnRequest: true,
   notSelectEstablishmentOnDescent: true,
   notSelectDrainOnBlockage: true,
   selectedParamId: "",

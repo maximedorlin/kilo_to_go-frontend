@@ -1,0 +1,28 @@
+                                                                                      
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cud-sig-front_app
+    env_file: .env-preprod
+    container_name: srec_front_end
+    ports:
+      - "10014:3000"
+    environment:
+      - NODE_ENV=production
+    entrypoint: ["sh", "entrypoint.sh"]
+    restart: always
+    volumes:
+      - ./static:/app/static
+    networks:
+      - frontnet
+
+networks:
+  frontnet:
+    driver: bridge
+
+
+
+
+

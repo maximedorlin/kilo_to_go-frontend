@@ -1,0 +1,60 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "request_sanitry_intervention.5dc54fc9-8d5d-492b-ae6e-b051d5f721b8",
+      "geometry": null,
+      "geometry_name": "geom",
+      "properties": {
+        "created_at": "2025-05-29T14:51:18.667Z",
+        "updated_at": "2025-06-12T14:18:13.024Z",
+        "code": "CUD-INTERVENTIONFJO-34R",
+        "intervention_status": "ongoing",
+        "drop_down_program_id": "f475df48-43d1-4da5-8943-b53f074e6680"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "request_sanitry_intervention.7d0ec881-1a55-4d33-92e1-6f94bf37d2ba",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [580689.45197885, 448828.78471932]
+      },
+      "geometry_name": "geom",
+      "properties": {
+        "created_at": "2025-06-09T08:03:14.501Z",
+        "updated_at": "2025-06-12T14:19:14.997Z",
+        "code": "CUD-INTERVENTIONH3O-ZVK",
+        "intervention_status": "confirmed",
+        "drop_down_program_id": "d4b53452-4a18-4521-9ded-455b3639d16d"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "request_sanitry_intervention.ef052698-d1c6-414c-b639-1fe8901075d0",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [580689.45197885, 448828.78471932]
+      },
+      "geometry_name": "geom",
+      "properties": {
+        "created_at": "2025-05-29T14:51:18.675Z",
+        "updated_at": "2025-06-12T14:18:07.700Z",
+        "code": "CUD-INTERVENTION61F-QHD",
+        "intervention_status": "ongoing",
+        "drop_down_program_id": "d4b53452-4a18-4521-9ded-455b3639d16d"
+      }
+    }
+  ],
+  "totalFeatures": 3,
+  "numberMatched": 3,
+  "numberReturned": 3,
+  "timeStamp": "2025-06-12T14:22:30.946Z",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:EPSG::32632"
+    }
+  }
+}
